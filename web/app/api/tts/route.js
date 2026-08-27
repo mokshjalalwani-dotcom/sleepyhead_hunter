@@ -63,12 +63,9 @@ function synthesize(text, voice, rateStr, volumeStr) {
       // 2. Send SSML — derive xml:lang from voice name (e.g. hi-IN-SwaraNeural → hi-IN)
       const langCode = voice.split('-').slice(0, 2).join('-'); // "hi-IN", "en-US", etc.
       const ssml =
-        `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" ` +
-        `xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${langCode}">` +
+        `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${langCode}">` +
         `<voice name="${voice}">` +
-        `<mstts:express-as style="angry">` +
         `<prosody rate="${rateStr}" volume="${volumeStr}">${escapeXml(text)}</prosody>` +
-        `</mstts:express-as>` +
         `</voice></speak>`;
 
       ws.send(
