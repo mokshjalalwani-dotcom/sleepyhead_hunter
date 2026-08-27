@@ -1,3 +1,5 @@
+import { translate } from '@vitalets/google-translate-api';
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const text = searchParams.get('text');
@@ -10,25 +12,8 @@ export async function GET(request) {
   }
 
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=hi&dt=t&q=${encodeURIComponent(text)}`;
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-      }
-    });
-
-    if (!res.ok) {
-      throw new Error(`Google Translate API error: ${res.status}`);
-    }
-
-    const data = await res.json();
+    const { text: translation } = await translate(text, { to: 'hi' });
     
-    // The response format is deeply nested arrays: [[[ "translation", "original", null, null, 10 ]], ...]
-    let translation = '';
-    if (data && data[0]) {
-      translation = data[0].map(item => item[0]).join('');
-    }
-
     return new Response(JSON.stringify({ translation }), {
       status: 200,
       headers: { 
