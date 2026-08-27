@@ -89,14 +89,14 @@ export class AlarmEngine {
 
       audio.onended = () => {
         if (this._loopActive && stageConfig.playbackMode === 'loop') {
-          setTimeout(play, 250);
+          setTimeout(play, 2000);
         }
       };
 
       audio.onerror = () => {
         // Blob may have expired — clear cache and retry once
         this._audioCache.delete(`${stageConfig.text}|${this._voice}|${stageConfig.rate}`);
-        if (this._loopActive) setTimeout(play, 500);
+        if (this._loopActive) setTimeout(play, 2000);
       };
 
       try {
@@ -129,7 +129,7 @@ export class AlarmEngine {
     utter.pitch     = 1.0;
     utter.onend     = () => {
       if (this._loopActive && stageConfig.playbackMode === 'loop') {
-        setTimeout(() => this._fallbackSpeak(stageConfig), 250);
+        setTimeout(() => this._fallbackSpeak(stageConfig), 2000);
       }
     };
     window.speechSynthesis.cancel();
