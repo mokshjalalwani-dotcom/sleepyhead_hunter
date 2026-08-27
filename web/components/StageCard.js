@@ -20,6 +20,7 @@ const DURATION_OPTIONS = [
 
 export default function StageCard({ stage, data, onChange }) {
   const [customDuration, setCustomDuration] = useState('');
+  const [translating, setTranslating] = useState(false);
   const idx = stage - 1;
   const meta = STAGE_META[idx];
 
@@ -59,15 +60,43 @@ export default function StageCard({ stage, data, onChange }) {
             <span className="field-label-icon" aria-hidden="true">💬</span>
             Alert Message
           </label>
-          <input
-            id={`stage-${stage}-text`}
-            className="field-input"
-            type="text"
-            value={data.text}
-            placeholder="e.g. उठ जा  or  wake up!"
-            onChange={(e) => handleChange('text', e.target.value)}
-            aria-describedby={`stage-${stage}-text-hint`}
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              id={`stage-${stage}-text`}
+              className="field-input"
+              type="text"
+              value={data.text}
+              placeholder="e.g. उठ जा  or  wake up!"
+              onChange={(e) => handleChange('text', e.target.value)}
+              aria-describedby={`stage-${stage}-text-hint`}
+              style={{ paddingRight: '110px' }}
+            />
+            <button
+              onClick={async () => {
+                if (!data.text || !data.text.trim()) return;
+                setTranslating(true);
+                try {
+                  const res = await fetch(`/api/translate?text=${encodeURIComponent(data.text)}`);
+                  const json = await res.json();
+                  if (json.translation) handleChange('text', json.translation);
+                } catch (err) {
+                  console.error(err);
+                } finally {
+                  setTranslating(false);
+                }
+              }}
+              disabled={translating || !data.text}
+              style={{
+                position: 'absolute', right: '8px', top: '8px', bottom: '8px',
+                padding: '0 12px', fontSize: '12px', fontWeight: 600,
+                background: 'var(--cyan-dim)', color: 'var(--cyan)',
+                border: 'none', borderRadius: '4px', cursor: 'pointer',
+                opacity: (!data.text || translating) ? 0.5 : 1, transition: '0.2s',
+              }}
+            >
+              {translating ? '⏳' : 'Aअ Translate'}
+            </button>
+          </div>
           <p id={`stage-${stage}-text-hint`} style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px', lineHeight: 1.6 }}>
             💡 Use <strong style={{ color: 'var(--cyan)' }}>Devanagari script</strong> for natural Hindi pronunciation
             (e.g. <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--amber)' }}>उठ जा</span> instead of <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--text-muted)' }}>uth ja</span>).
@@ -151,79 +180,6 @@ export default function StageCard({ stage, data, onChange }) {
           />
         </div>
 
-        {/* Playback Mode */}
-        <div>
-          <div className="field-label">
-            <span className="field-label-icon" aria-hidden="true">▶️</span>
-            Playback Mode
-          </div>
-          <div
-            className="mode-toggle"
-            role="group"
-            aria-label={`Stage ${stage} playback mode`}
-          >
-            <button
-              id={`stage-${stage}-mode-loop`}
-              className={`mode-btn${data.playbackMode === 'loop' ? ' active' : ''}`}
-              onClick={() => handleChange('playbackMode', 'loop')}
-              aria-pressed={data.playbackMode === 'loop'}
-            >
-              🔁 Loop
-            </button>
-            <button
-              id={`stage-${stage}-mode-duration`}
-              className={`mode-btn${data.playbackMode === 'duration' ? ' active' : ''}`}
-              onClick={() => handleChange('playbackMode', 'duration')}
-              aria-pressed={data.playbackMode === 'duration'}
-            >
-              ⏱ Duration
-            </button>
-          </div>
-        </div>
-
-        {/* Duration Selector — shown only if duration mode */}
-        {data.playbackMode === 'duration' && (
-          <div className="field-full">
-            <label
-              htmlFor={`stage-${stage}-duration`}
-              className="field-label"
-            >
-              <span className="field-label-icon" aria-hidden="true">⏱️</span>
-              Play For How Long?
-            </label>
-            <select
-              id={`stage-${stage}-duration`}
-              className="duration-select"
-              value={data.duration}
-              onChange={(e) => handleChange('duration', e.target.value)}
-            >
-              {DURATION_OPTIONS.filter(o => o.value !== 'loop').map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-
-            {data.duration === 'custom' && (
-              <div style={{ marginTop: '10px' }}>
-                <input
-                  id={`stage-${stage}-custom-duration`}
-                  className="field-input"
-                  type="number"
-                  min="5"
-                  max="3600"
-                  placeholder="Enter seconds (e.g. 45)"
-                  value={customDuration}
-                  onChange={(e) => {
-                    setCustomDuration(e.target.value);
-                    handleChange('customDurationSecs', e.target.value);
-                  }}
-                  aria-label="Custom duration in seconds"
-                />
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </article>
   );

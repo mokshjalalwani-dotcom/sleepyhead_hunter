@@ -21,8 +21,8 @@ export default function Navbar() {
         </Link>
 
         <ul className="navbar-links" role="list">
-          <li><a href="#features">Features</a></li>
-          <li><a href="#how-it-works">How It Works</a></li>
+          <li><Link href="/#features">Features</Link></li>
+          <li><Link href="/#how-it-works">How It Works</Link></li>
           <li><Link href="/configure">Configure</Link></li>
           <li>
             <Link

@@ -10,13 +10,19 @@ import Footer from './Footer';
 const WebcamCanvas = dynamic(() => import('./WebcamCanvas'), { ssr: false });
 
 const DEFAULT_STAGES = [
-  { text: 'उठ जा',              volume: 0.5,  rate: 150, playbackMode: 'loop',     duration: '60'  },
-  { text: 'उठ जाओ यार',        volume: 0.65, rate: 165, playbackMode: 'loop',     duration: '60'  },
-  { text: 'अरे उठो! सो मत जाओ', volume: 0.8,  rate: 180, playbackMode: 'duration', duration: '120' },
-  { text: 'उठो अभी! बिल्कुल अभी!', volume: 1.0, rate: 200, playbackMode: 'duration', duration: '120' },
+  { text: 'उठ जा',              volume: 0.5,  rate: 150 },
+  { text: 'उठ जाओ यार',        volume: 0.65, rate: 165 },
+  { text: 'अरे उठो! सो मत जाओ', volume: 0.8,  rate: 180 },
+  { text: 'उठो अभी! बिल्कुल अभी!', volume: 1.0, rate: 200 },
 ];
 
-const DEFAULT_GLOBAL = { earThreshold: 0.21, closedTime: 4.0, repeatInterval: 3.0 };
+const DEFAULT_GLOBAL = { 
+  earThreshold: 0.21, 
+  closedTime: 4.0, 
+  repeatInterval: 3.0,
+  playbackMode: 'loop',
+  duration: '60'
+};
 
 const STAGE_COLORS = ['var(--stage-1)', 'var(--stage-2)', 'var(--stage-3)', 'var(--stage-4)'];
 const STAGE_LABELS = ['😴 Gentle', '😪 Firm', '😡 Loud', '🚨 Nuclear'];
@@ -97,7 +103,13 @@ export default function LiveDetector() {
         if (lastAlertRef.current === 0 || now - lastAlertRef.current >= repeatInterval) {
           const stageIdx   = stageIndexRef.current;
           const stageCfg   = stagesRef.current[stageIdx];
-          engineRef.current?.fire(stageCfg);
+          const globalCfg  = globalRef.current;
+          
+          engineRef.current?.fire({
+            ...stageCfg,
+            playbackMode: globalCfg.playbackMode,
+            duration: globalCfg.duration
+          });
           setAlarmActive(true);
           setCurrentStage(stageIdx + 1);
           lastAlertRef.current = now;
@@ -468,9 +480,42 @@ export default function LiveDetector() {
 
                   {/* Global quick settings */}
                   <div className="glass-card" style={{ padding: '16px' }}>
-                    <div style={{ fontSize: '11px', fontFamily: 'Space Mono, monospace', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                    <div style={{ fontSize: '11px', fontFamily: 'Space Mono, monospace', color: 'var(--text-muted)', marginBottom: '16px' }}>
                       GLOBAL SETTINGS
                     </div>
+                    
+                    {/* Mode Toggle */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ fontSize: '11px', color: 'var(--text-secondary)', fontFamily: 'Space Mono, monospace', display: 'block', marginBottom: '8px' }}>
+                        Alarm Playback Mode
+                      </label>
+                      <div className="mode-toggle" role="group">
+                        {['loop', 'duration'].map((mode) => (
+                          <button
+                            key={mode}
+                            className={`mode-btn${global.playbackMode === mode ? ' active' : ''}`}
+                            onClick={() => setGlobal({ ...global, playbackMode: mode })}
+                          >
+                            {mode === 'loop' ? '🔁 Loop' : '⏱ Duration'}
+                          </button>
+                        ))}
+                      </div>
+                      {global.playbackMode === 'duration' && (
+                        <select
+                          className="duration-select"
+                          style={{ marginTop: '8px' }}
+                          value={global.duration}
+                          onChange={(e) => setGlobal({ ...global, duration: e.target.value })}
+                        >
+                          <option value="30">30 seconds</option>
+                          <option value="60">1 minute</option>
+                          <option value="120">2 minutes</option>
+                          <option value="300">5 minutes</option>
+                          <option value="custom">Custom...</option>
+                        </select>
+                      )}
+                    </div>
+
                     {[
                       { key: 'earThreshold', label: 'EAR Threshold', min: 0.12, max: 0.35, step: 0.01, fmt: (v) => v.toFixed(2) },
                       { key: 'closedTime',   label: 'Trigger Delay', min: 1,    max: 15,   step: 0.5,  fmt: (v) => `${v}s`     },
@@ -519,6 +564,21 @@ export default function LiveDetector() {
 /* ── Compact inline stage config card ── */
 function InlineStageCard({ stage, data, onChange }) {
   const color = STAGE_COLORS[stage - 1];
+  const [translating, setTranslating] = useState(false);
+
+  const handleTranslate = async () => {
+    if (!data.text || !data.text.trim()) return;
+    setTranslating(true);
+    try {
+      const res = await fetch(`/api/translate?text=${encodeURIComponent(data.text)}`);
+      const json = await res.json();
+      if (json.translation) onChange({ ...data, text: json.translation });
+    } catch (err) {
+      console.error('Translation failed', err);
+    } finally {
+      setTranslating(false);
+    }
+  };
 
   return (
     <div
@@ -537,15 +597,30 @@ function InlineStageCard({ stage, data, onChange }) {
       </div>
 
       {/* Message */}
-      <input
-        id={`live-stage-${stage}-text`}
-        className="field-input"
-        style={{ marginBottom: '10px', fontSize: '13px' }}
-        value={data.text}
-        onChange={(e) => onChange({ ...data, text: e.target.value })}
-        placeholder="Alert message..."
-        aria-label={`Stage ${stage} message`}
-      />
+      <div style={{ position: 'relative', marginBottom: '14px' }}>
+        <input
+          id={`live-stage-${stage}-text`}
+          className="field-input"
+          style={{ fontSize: '13px', paddingRight: '100px' }}
+          value={data.text}
+          onChange={(e) => onChange({ ...data, text: e.target.value })}
+          placeholder="Alert message..."
+          aria-label={`Stage ${stage} message`}
+        />
+        <button
+          onClick={handleTranslate}
+          disabled={translating || !data.text}
+          style={{
+            position: 'absolute', right: '6px', top: '6px', bottom: '6px',
+            padding: '0 10px', fontSize: '11px', fontWeight: 600,
+            background: 'var(--cyan-dim)', color: 'var(--cyan)',
+            border: 'none', borderRadius: '4px', cursor: 'pointer',
+            opacity: (!data.text || translating) ? 0.5 : 1, transition: '0.2s',
+          }}
+        >
+          {translating ? '⏳' : 'Aअ Translate'}
+        </button>
+      </div>
 
       {/* Volume + Rate row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
@@ -570,38 +645,6 @@ function InlineStageCard({ stage, data, onChange }) {
           />
         </div>
       </div>
-
-      {/* Playback Mode */}
-      <div className="mode-toggle" role="group" aria-label={`Stage ${stage} playback mode`}>
-        {['loop', 'duration'].map((mode) => (
-          <button
-            key={mode}
-            id={`live-stage-${stage}-mode-${mode}`}
-            className={`mode-btn${data.playbackMode === mode ? ' active' : ''}`}
-            onClick={() => onChange({ ...data, playbackMode: mode })}
-            aria-pressed={data.playbackMode === mode}
-          >
-            {mode === 'loop' ? '🔁 Loop' : '⏱ Duration'}
-          </button>
-        ))}
-      </div>
-
-      {data.playbackMode === 'duration' && (
-        <select
-          id={`live-stage-${stage}-duration`}
-          className="duration-select"
-          style={{ marginTop: '10px' }}
-          value={data.duration}
-          onChange={(e) => onChange({ ...data, duration: e.target.value })}
-          aria-label={`Stage ${stage} duration`}
-        >
-          <option value="30">30 seconds</option>
-          <option value="60">1 minute</option>
-          <option value="120">2 minutes</option>
-          <option value="300">5 minutes</option>
-          <option value="custom">Custom...</option>
-        </select>
-      )}
     </div>
   );
 }
