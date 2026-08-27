@@ -10,10 +10,10 @@ import Footer from './Footer';
 const WebcamCanvas = dynamic(() => import('./WebcamCanvas'), { ssr: false });
 
 const DEFAULT_STAGES = [
-  { text: 'uth ja',                       volume: 0.5,  rate: 150, playbackMode: 'loop',     duration: '60'  },
-  { text: 'uth jaa',                       volume: 0.65, rate: 165, playbackMode: 'loop',     duration: '60'  },
-  { text: 'uth jaaaa',                     volume: 0.8,  rate: 180, playbackMode: 'duration', duration: '120' },
-  { text: 'uth jaaaaaa behen ke low day',  volume: 1.0,  rate: 200, playbackMode: 'duration', duration: '120' },
+  { text: 'उठ जा',              volume: 0.5,  rate: 150, playbackMode: 'loop',     duration: '60'  },
+  { text: 'उठ जाओ यार',        volume: 0.65, rate: 165, playbackMode: 'loop',     duration: '60'  },
+  { text: 'अरे उठो! सो मत जाओ', volume: 0.8,  rate: 180, playbackMode: 'duration', duration: '120' },
+  { text: 'उठो अभी! बिल्कुल अभी!', volume: 1.0, rate: 200, playbackMode: 'duration', duration: '120' },
 ];
 
 const DEFAULT_GLOBAL = { earThreshold: 0.21, closedTime: 4.0, repeatInterval: 3.0 };

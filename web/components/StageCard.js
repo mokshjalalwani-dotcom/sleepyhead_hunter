@@ -64,12 +64,14 @@ export default function StageCard({ stage, data, onChange }) {
             className="field-input"
             type="text"
             value={data.text}
-            placeholder="e.g. wake up!, uth ja, hey sleepyhead!"
+            placeholder="e.g. उठ जा  or  wake up!"
             onChange={(e) => handleChange('text', e.target.value)}
             aria-describedby={`stage-${stage}-text-hint`}
           />
-          <p id={`stage-${stage}-text-hint`} style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>
-            This text will be spoken aloud by the TTS voice.
+          <p id={`stage-${stage}-text-hint`} style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px', lineHeight: 1.6 }}>
+            💡 Use <strong style={{ color: 'var(--cyan)' }}>Devanagari script</strong> for natural Hindi pronunciation
+            (e.g. <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--amber)' }}>उठ जा</span> instead of <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--text-muted)' }}>uth ja</span>).
+            English works too.
           </p>
         </div>
 
