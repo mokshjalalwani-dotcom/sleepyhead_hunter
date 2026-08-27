@@ -1,0 +1,6 @@
+opencv-python<5
+mediapipe==0.10.14
+numpy<2
+pyttsx3
+edge-tts
+pygame

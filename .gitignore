@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Audio cache (generated at runtime)
+audio_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Next.js
+web/.next/
+web/out/
+web/node_modules/
+web/.vercel/
+web/npm-debug.log*
+web/yarn-debug.log*
+web/yarn-error.log*
+
+# Env files
+.env
+.env.local
+.env.*.local
