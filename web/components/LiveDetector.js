@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { AlarmEngine } from './AlarmEngine';
+import { AlarmEngine, VOICES } from './AlarmEngine';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
@@ -32,6 +32,7 @@ export default function LiveDetector() {
   const [stages,      setStages]      = useState(DEFAULT_STAGES);
   const [global,      setGlobal]      = useState(DEFAULT_GLOBAL);
   const [showConfig,  setShowConfig]  = useState(false);
+  const [voice,       setVoice]       = useState('hi-IN-SwaraNeural');
 
   const engineRef       = useRef(null);
   const closedStartRef  = useRef(null);
@@ -48,9 +49,15 @@ export default function LiveDetector() {
 
   // Init alarm engine
   useEffect(() => {
-    engineRef.current = new AlarmEngine();
+    engineRef.current = new AlarmEngine(voice);
     return () => engineRef.current?.destroy();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Update voice when it changes
+  useEffect(() => {
+    engineRef.current?.setVoice(voice);
+  }, [voice]);
 
   // Main EAR handler — called each frame
   const handleEAR = useCallback((avgEAR) => {
@@ -406,6 +413,27 @@ export default function LiveDetector() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Voice Selector */}
+              <div className="glass-card" style={{ padding: '16px' }} role="region" aria-label="Voice selection">
+                <div style={{ fontSize: '11px', fontFamily: 'Space Mono, monospace', color: 'var(--text-muted)', letterSpacing: '1px', marginBottom: '10px' }}>
+                  NEURAL VOICE
+                </div>
+                <select
+                  id="voice-selector"
+                  className="duration-select"
+                  value={voice}
+                  onChange={(e) => setVoice(e.target.value)}
+                  aria-label="Select TTS voice"
+                >
+                  {VOICES.map((v) => (
+                    <option key={v.id} value={v.id}>{v.label}</option>
+                  ))}
+                </select>
+                <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.5 }}>
+                  Using Microsoft Edge Neural TTS — same voice as the Python app.
+                </p>
               </div>
 
               {/* Config Toggle */}

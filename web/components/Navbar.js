@@ -25,7 +25,34 @@ export default function Navbar() {
           <li><a href="#how-it-works">How It Works</a></li>
           <li><Link href="/configure">Configure</Link></li>
           <li>
-            <Link href="/detect" className="btn btn-primary btn-sm" id="nav-detect-btn">
+            <Link
+              href="/detect"
+              id="nav-detect-btn"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '7px',
+                padding: '8px 18px',
+                borderRadius: '10px',
+                fontSize: '14px',
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #007a99 0%, #005f77 100%)',
+                color: '#ffffff',
+                border: '1px solid rgba(0,229,255,0.5)',
+                boxShadow: '0 0 16px rgba(0,229,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                textDecoration: 'none',
+                letterSpacing: '0.3px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.boxShadow = '0 0 28px rgba(0,229,255,0.6), inset 0 1px 0 rgba(255,255,255,0.2)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.boxShadow = '0 0 16px rgba(0,229,255,0.35), inset 0 1px 0 rgba(255,255,255,0.15)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
               👁️ Live Detector
             </Link>
           </li>
