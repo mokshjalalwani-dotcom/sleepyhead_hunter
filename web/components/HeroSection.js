@@ -29,17 +29,20 @@ export default function HeroSection() {
             </p>
 
             <div className="hero-ctas fade-in-up delay-3">
-              <Link href="/configure" className="btn btn-primary" id="hero-configure-btn">
-                ⚙️ Configure Alarm
+              <Link href="/detect" className="btn btn-primary" id="hero-detect-btn">
+                👁️ Try Live in Browser
+              </Link>
+              <Link href="/configure" className="btn btn-outline" id="hero-configure-btn">
+                ⚙️ Configure Stages
               </Link>
               <a
-                href="https://github.com"
+                href="https://github.com/mokshjalalwani-dotcom/sleepyhead_hunter"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-outline"
                 id="hero-github-btn"
               >
-                📦 View on GitHub
+                📦 GitHub
               </a>
             </div>
 

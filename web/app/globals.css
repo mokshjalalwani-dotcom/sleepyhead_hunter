@@ -1095,6 +1095,10 @@ option {
   .stage-fields { grid-template-columns: 1fr; }
   .stats-inner { gap: 32px; }
   .stat-divider { display: none; }
+
+  /* Detect page: stack video + sidebar */
+  .detect-layout { grid-template-columns: 1fr !important; }
+  .detect-sidebar { position: static !important; top: auto !important; }
 }
 
 @media (max-width: 600px) {

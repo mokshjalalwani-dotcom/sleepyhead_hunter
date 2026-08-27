@@ -25,8 +25,13 @@ export default function Navbar() {
           <li><a href="#how-it-works">How It Works</a></li>
           <li><Link href="/configure">Configure</Link></li>
           <li>
+            <Link href="/detect" className="btn btn-primary btn-sm" id="nav-detect-btn">
+              👁️ Live Detector
+            </Link>
+          </li>
+          <li>
             <a
-              href="https://github.com"
+              href="https://github.com/mokshjalalwani-dotcom/sleepyhead_hunter"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline btn-sm"
