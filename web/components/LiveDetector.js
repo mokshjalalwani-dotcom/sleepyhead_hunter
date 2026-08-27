@@ -107,7 +107,7 @@ export default function LiveDetector() {
           
           engineRef.current?.fire({
             ...stageCfg,
-            playbackMode: globalCfg.playbackMode,
+            playbackMode: stageIdx === stagesRef.current.length - 1 ? 'loop' : 'once',
             duration: globalCfg.duration
           });
           setAlarmActive(true);
