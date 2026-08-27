@@ -101,6 +101,56 @@ export default function GlobalSettings({ settings, onChange }) {
           </div>
         );
       })}
+
+      {/* Global Playback Mode */}
+      <div className="global-field" style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+          
+          <div style={{ flex: 1 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '12px' }}>
+              <span className="field-label-icon" aria-hidden="true">▶️</span>
+              Global Playback Mode
+            </label>
+            <div className="mode-toggle" role="group">
+              {['loop', 'duration'].map((mode) => (
+                <button
+                  key={mode}
+                  className={`mode-btn${settings.playbackMode === mode ? ' active' : ''}`}
+                  onClick={() => onChange({ ...settings, playbackMode: mode })}
+                >
+                  {mode === 'loop' ? '🔁 Loop Stage 4' : '⏱ Play for Duration'}
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px' }}>
+              {settings.playbackMode === 'loop' 
+                ? 'Stage 4 will repeat infinitely until eyes open.' 
+                : 'The entire alarm system will shut off after the duration limit.'}
+            </p>
+          </div>
+
+          {settings.playbackMode === 'duration' && (
+            <div style={{ flex: 1, minWidth: '150px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                <span className="field-label-icon" aria-hidden="true">⏱️</span>
+                Time Limit
+              </label>
+              <select
+                className="duration-select"
+                value={settings.duration}
+                onChange={(e) => onChange({ ...settings, duration: e.target.value })}
+              >
+                <option value="30">30 seconds</option>
+                <option value="60">1 minute</option>
+                <option value="120">2 minutes</option>
+                <option value="300">5 minutes</option>
+                <option value="custom">Custom...</option>
+              </select>
+            </div>
+          )}
+
+        </div>
+      </div>
     </section>
   );
 }
